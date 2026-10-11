@@ -1,0 +1,4 @@
+dist/
+videos/run.log
+__pycache__/
+*.pyc
