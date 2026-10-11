@@ -307,7 +307,7 @@ def main():
         try:
             root = build(col)
             col.export_anki_package(out_path=os.path.abspath(a.apkg),
-                                    options=ExportAnkiPackageOptions(with_scheduling=False, with_deck_configs=True, with_media=False, legacy=False),
+                                    options=ExportAnkiPackageOptions(with_scheduling=True, with_deck_configs=True, with_media=False, legacy=False),
                                     limit=DeckIdLimit(root))
             print('wrote', a.apkg)
         finally:
