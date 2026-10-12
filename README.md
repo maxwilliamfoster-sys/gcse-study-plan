@@ -23,9 +23,9 @@ A home-study GCSE timetable and revision guide, built around the Year 11 online-
 
 ## Anki deck — `anki/`
 
-`anki/GCSE-2027.apkg` holds about 4,100 cards in a **GCSE 2027** deck with a subdeck per subject: the full AQA 8662 vocab list, History dates, people and key events for every paper, all Trilogy topics and required practicals, maths formulae that aren't on the sheet, Literature quotes, and Language techniques.
+`anki/GCSE-2027.apkg` holds about 4,100 cards in **six subject decks** (German, History, Science, Maths, English Literature, English Language), each with its own daily limit: the full AQA 8662 vocab list, History dates, people and key events for every paper, all Trilogy topics and required practicals, maths formulae that aren't on the sheet, Literature quotes, and Language techniques.
 
-New cards are ordered to match the plan week by week, 35 a day. To import on another device, double-click the `.apkg` file (or use File → Import).
+Anything printed on the 2027 exam sheets (every Physics equation, the Edexcel formula sheet) is deliberately left out. New cards are ordered to match the plan week by week. To import on another device, double-click the `.apkg` file (or use File → Import).
 
 To rebuild after editing `anki/cards/*.py`, you need the `anki` Python package at the same version as the desktop app:
 

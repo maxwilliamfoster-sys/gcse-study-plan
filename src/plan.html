@@ -228,7 +228,7 @@ const L = {
   bbg:['Bitesize German: AQA (grammar)','https://www.bbc.co.uk/bitesize/examspecs/z6t9fdm'],
   easy:['Easy German (listening, subtitles)','https://www.youtube.com/@EasyGerman'],
   app:['Your GCSE Plan app (flashcards)','https://maxwilliamfoster-sys.github.io/gcse-plan/'],
-  anki:['Anki: GCSE 2027 deck (AnkiWeb for phone sync)','https://ankiweb.net/']
+  anki:['Anki: your six subject decks (AnkiWeb for phone sync)','https://ankiweb.net/']
 };
 const VIDEOS = /*VIDEOS*/{};
 function vidsFor(s, ph){ if (!(ph.p===1||ph.p===2||ph.p===3)) return []; return VIDEOS[ph.p+'-'+(ph.wk+1)+'-'+s] || []; }
@@ -326,7 +326,7 @@ const HOW = {
   M:{how:['15 min: Corbett 5-a-day (Higher). Mark it straight away.','25 min: this week’s topic on Maths Genie. Start at grade 5 and climb to grade 8/9. Watch the Corbett video only when stuck.','5 min: turn every mistake into a flashcard: question on the front, method on the back.'], ln:['cm5','mg','cmv']},
   S:{how:['15 min: one video on the sub-topic (Cognito or Freesciencelessons) at 1.25×. Pause and predict before each answer.','10 min: write 8–10 question→answer flashcards. Use exact AQA key words.','15 min: topic questions from Cognito or PMT. Mark them with the mark scheme.','5 min: if there is a required practical, write its method in 5 steps from memory.'], ln:['cog','pmb','pmc','pmp','bbs']},
   H:{how:['5 min: read the spec bullet for this topic (what OCR can ask).','20 min: Bitesize or Mr Allsop on the topic, then a one-page knowledge organiser: dates, people, 3 causes, 3 consequences.','10 min: close everything and blurt it onto a blank page. Check it and fill the gaps in a second colour.','10 min: one exam question, e.g. "Explain why…" (10 marks) in 12 minutes.'], ln:['bbh','bbusa','bbcwv','bbmig','allsop','ocrspec']},
-  G:{how:['10 min: this week’s German vocab in Anki (GCSE 2027 › German), or typing practice in your GCSE Plan app.','15 min: the grammar point on Bitesize, then write 10 sentences of your own using it.','15 min: write 90 words on the week’s topic. Include 3 tenses, a weil clause and an opinion.','5 min: read it aloud twice. Speaking is 25% of the GCSE.'], ln:['app','bbg','aqagspec','easy']},
+  G:{how:['10 min: the German deck in Anki (vocab and grammar), or typing practice in your GCSE Plan app.','15 min: the grammar point on Bitesize, then write 10 sentences of your own using it.','15 min: write 90 words on the week’s topic. Include 3 tenses, a weil clause and an opinion.','5 min: read it aloud twice. Speaking is 25% of the GCSE.'], ln:['app','bbg','aqagspec','easy']},
   LIT:{how:['10 min: retrieve 10 quotes for the text from memory, then check them.','20 min: Mr Bruff, Mr Salles or Bitesize on this week’s focus. Annotate each quote: method → effect → context.','15 min: plan an AQA-style essay: a thesis line and 3 paragraphs, each with a quote, a method and context.'], ln:['bblit','bruff','salles','bbaic','bbrj','bbjh','bbpc']},
   LANG:{how:['5 min: read the question and the insert of an AQA past paper.','25 min: answer this week’s question type in exam time (Q2 10 min, Q3 10 min, Q4 20 min, Q5 45 min split across two blocks).','15 min: compare with the mark scheme. Rewrite your weakest paragraph.'], ln:['aqalang','bbl','bruff','salles']}
  },
@@ -442,11 +442,11 @@ function renderToday(){
     out.push(card({id:iso(d)+'-b', t1:'10:30', t2:'10:45', s:'GEN', title:'Break', quiet:true}));
     out.push(card({id:iso(d)+'-s2', t1:'10:45', t2:'11:30', s, title:'Mark it and do corrections', tag:'45 min',
       how:['Mark it with the official mark scheme, not your own judgement.','Write the correct answer for each lost mark in a different colour.','Add each mistake to your weak list and your flashcards.']}));
-    out.push(card({id:iso(d)+'-s3', t1:'11:30', t2:'11:45', s:'G', title:'Flashcards', tag:'15 min', how:['Anki: click the top deck, GCSE 2027, and clear today’s due cards.'], ln:['anki','app']}));
+    out.push(card({id:iso(d)+'-s3', t1:'11:30', t2:'11:45', s:'G', title:'Flashcards', tag:'15 min', how:['Anki: clear whatever is still due in your six subject decks.'], ln:['anki','app']}));
     out.push(`<p class="muted small">The rest of Saturday is yours.</p>`);
   }
   else {
-    out.push(card({id:iso(d)+'-c', t1:'08:00', t2:'08:15', s:'G', title:'Anki warm-up', tag:'15 min', how:['Open Anki and click the top deck, GCSE 2027 (not a sub-deck), so the new cards follow this plan week by week.','Do today’s reviews first, then the 35 new cards. Say answers out loud before you flip.'], ln:['anki','app']}));
+    out.push(card({id:iso(d)+'-c', t1:'08:00', t2:'08:15', s:'G', title:'Anki warm-up', tag:'15 min', how:['Open Anki and do each subject deck in turn: German, History, Science, Maths, English Literature, English Language. Click the subject itself, not a sub-deck, so new cards follow this plan week by week.','About 39 new cards a day in total, plus reviews. Say each answer out loud before you flip.'], ln:['anki','app']}));
     const row = WEEK[wd];
     row.forEach((code, i) => {
       const t = BLOCK_TIMES[i];
@@ -676,12 +676,12 @@ function renderMethod(){
   <p>You want to learn a lot fast. These are the techniques that research rates highest for that, and the plan is built from them. Rereading and highlighting feel productive but are the least effective, so the plan avoids them.</p>
   <div class="grid2">
     <div class="box"><h3>1. Test yourself (retrieval practice)</h3><p>Pulling information out of memory is what strengthens it. Every block ends with a question, a blurt or flashcards. If a block is only reading or watching, it didn’t count.</p></div>
-    <div class="box"><h3>2. Space it out</h3><p>Revisit a topic after about 1 day, 3 days, 1 week and 3 weeks. Anki does the spacing for you. Your GCSE 2027 deck has about 4,100 cards in plan order, 35 new a day, finishing by early February. The Friday quiz pulls topics from 2–3 weeks back on purpose.</p></div>
+    <div class="box"><h3>2. Space it out</h3><p>Revisit a topic after about 1 day, 3 days, 1 week and 3 weeks. Anki does the spacing for you. Your six subject decks hold about 4,100 cards in plan order. Each subject has its own daily limit: German finishes around the end of February, the rest by early January. The Friday quiz pulls topics from 2–3 weeks back on purpose.</p></div>
     <div class="box"><h3>3. Mix subjects (interleaving)</h3><p>No subject runs twice in a row, and in Maths you mix question types. It feels harder, but that difficulty is what improves exam performance.</p></div>
     <div class="box"><h3>4. Past papers + mark schemes</h3><p>The fastest way to learn what examiners reward. Always mark with the official scheme, and copy its exact wording into your flashcards.</p></div>
     <div class="box"><h3>Blurting (how to)</h3><ol class="how"><li>Pick a topic. Blank page, 5–8 minutes, write everything you remember.</li><li>Open your notes and fill the gaps in a different colour.</li><li>The coloured bits are tomorrow’s flashcards.</li></ol></div>
     <div class="box"><h3>Mistake log (how to)</h3><ol class="how"><li>One page per subject: the question, why you lost marks, the correct answer.</li><li>Redo each one 3 days later, then a week later.</li><li>Two correct redos in a row: cross it off.</li></ol></div>
-    <div class="box"><h3>Your Anki deck (how to)</h3><ol class="how"><li>Always click the top deck, <b>GCSE 2027</b>. New cards then arrive in this plan’s order, every subject mixed.</li><li>35 new cards a day, about 30–40 minutes with reviews: the 08:00 warm-up plus 15 minutes in the evening.</li><li>Be honest: press Again if you didn’t know it. Good is the normal button.</li><li>Never skip a day. Reviews pile up fast, and missing a day doubles the next one.</li></ol></div>
+    <div class="box"><h3>Your Anki deck (how to)</h3><ol class="how"><li>There is one deck per subject. Click the subject (for example <b>German (AQA 8662)</b>), not a sub-deck, and new cards arrive in this plan’s order.</li><li>New cards a day: German 21, Science 6, History 5, Maths 3, English Literature 2, English Language 2. That is about 40 minutes with reviews: the 08:00 warm-up plus 15–20 minutes in the evening.</li><li>Nothing printed on the exam sheets is in the decks. Every Physics equation is on the 2027 equation sheet, so you learn units and ideas instead. The Maths deck only has formulae that are NOT on the Edexcel sheet.</li><li>Be honest: press Again if you didn’t know it. Good is the normal button.</li><li>Never skip a day. Reviews pile up fast, and missing a day doubles the next one.</li></ol></div>
     <div class="box"><h3>Working from home</h3><ul><li>Same start time every day (08:00), dressed, at a desk, never in bed.</li><li>Phone in another room during blocks. Use it only for flashcards in the warm-up.</li><li>Lunch outside or at the gym. Exercise helps memory and focus.</li><li>Sleep 8–9 hours. Memory is consolidated during sleep, so an all-nighter costs marks.</li></ul></div>
     <div class="box"><h3>If you fall behind</h3><ul><li>Don’t try to catch up by doubling the next day. Skip the missed block and carry on with today.</li><li>Put the missed topic on Saturday or your weak list.</li><li>Priority if time is tight: German vocab every day, History content, Science Paper 1 topics, then the rest.</li></ul></div>
   </div>
