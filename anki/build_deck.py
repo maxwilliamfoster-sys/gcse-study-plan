@@ -1,48 +1,71 @@
-"""Builds Max's "GCSE 2027" Anki decks.
+"""Builds Max's GCSE 2027 Anki decks: one top-level deck per subject.
 
 Card sources:
   * app_data.json  - exported from the GCSE Plan app (topic cards, the AQA 8662 vocab list, History dates/people)
   * cards/*.py     - extra cards written for the 2027 timetable (Science, Maths, History, English, German grammar)
+Facts printed on the 2027 exam sheets (every Physics equation, the Edexcel formula sheet) are left out (EXCLUDE).
 
-New cards are positioned in timetable order: the cards for the topics you study in week 1 come first,
-subjects interleaved, then week 2, and so on. All decks share the "GCSE 2027" preset
-(35 new cards/day, gathered by position, so studying the top deck follows the plan).
+New cards follow the timetable: week-1 topics first, then week 2, and so on. Each subject has its own preset
+("GCSE German", "GCSE Science", ...) whose daily new-card limit finishes that subject on schedule.
 
 Usage (needs the official `anki` package, same version as the desktop app):
-  python build_deck.py --collection "<path to collection.anki2>"   # add/update straight into a profile
-  python build_deck.py --apkg GCSE-2027.apkg                         # build a shareable package
-Re-running is safe: notes have stable GUIDs, so existing notes are updated, not duplicated.
+  python build_deck.py --apkg GCSE-2027.apkg     # build a shareable package
+  Inside Anki (Tools > Debug Console), to update a live collection in place:
+    import sys; sys.path.insert(0, r'<this folder>'); import build_deck; build_deck.build(mw.col); mw.reset()
+Re-running is safe: notes have stable GUIDs, so existing notes are updated or moved, not duplicated.
+Do NOT pass --collection with a path under AppData from the Claude app: it writes to a sandboxed copy.
 """
-import argparse, hashlib, importlib.util, json, os, sys, tempfile
-from collections import defaultdict, OrderedDict
+import argparse, hashlib, importlib.util, json, math, os, tempfile
+from collections import defaultdict
 
-from anki.collection import Collection, ExportAnkiPackageOptions, DeckIdLimit
+from anki.collection import Collection, ExportAnkiPackageOptions
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = 'GCSE 2027'
+# One top-level deck per subject (no shared parent), each with its own preset and daily new-card limit.
 DECKS = {
-    'DE_VOC_F': '1 German (AQA 8662)::1 Vocab - Foundation list',
-    'DE_VOC_H': '1 German (AQA 8662)::2 Vocab - Higher list',
-    'DE_GRAM': '1 German (AQA 8662)::3 Grammar',
-    'DE_TOPICS': '1 German (AQA 8662)::4 Topics and phrases',
-    'DE_SPEAK': '1 German (AQA 8662)::5 Speaking and dictation',
-    'H_IR': '2 History (OCR J410)::1 Paper 1 - International Relations 1918-75',
-    'H_USA': '2 History (OCR J410)::2 Paper 1 - USA 1919-48',
-    'H_MIG': '2 History (OCR J410)::3 Paper 2 - Migration to Britain',
-    'H_EMP': '2 History (OCR J410)::4 Paper 3 - Empire 1688-1730 and Spitalfields',
-    'H_SKILLS': '2 History (OCR J410)::5 Exam skills',
-    'BIO': '3 Science (AQA Trilogy)::1 Biology',
-    'CHEM': '3 Science (AQA Trilogy)::2 Chemistry',
-    'PHYS': '3 Science (AQA Trilogy)::3 Physics',
-    'RP': '3 Science (AQA Trilogy)::4 Required practicals',
-    'MATHS_TOPICS': '4 Maths (Edexcel 1MA1)::1 Topics',
-    'MATHS_LEARN': '4 Maths (Edexcel 1MA1)::2 Formulae and facts to learn',
-    'RJ': '5 English Literature (AQA 8702)::1 Romeo and Juliet',
-    'JH': '5 English Literature (AQA 8702)::2 Jekyll and Hyde',
-    'AIC': '5 English Literature (AQA 8702)::3 An Inspector Calls',
-    'PC': '5 English Literature (AQA 8702)::4 Power and Conflict and unseen',
-    'LANG': '6 English Language (AQA 8700)',
+    'DE_VOC_F': 'German (AQA 8662)::1 Vocab - Foundation list',
+    'DE_VOC_H': 'German (AQA 8662)::2 Vocab - Higher list',
+    'DE_GRAM': 'German (AQA 8662)::3 Grammar',
+    'DE_TOPICS': 'German (AQA 8662)::4 Topics and phrases',
+    'DE_SPEAK': 'German (AQA 8662)::5 Speaking and dictation',
+    'H_IR': 'History (OCR J410)::1 Paper 1 - International Relations 1918-75',
+    'H_USA': 'History (OCR J410)::2 Paper 1 - USA 1919-48',
+    'H_MIG': 'History (OCR J410)::3 Paper 2 - Migration to Britain',
+    'H_EMP': 'History (OCR J410)::4 Paper 3 - Empire 1688-1730 and Spitalfields',
+    'H_SKILLS': 'History (OCR J410)::5 Exam skills',
+    'BIO': 'Science (AQA Trilogy)::1 Biology',
+    'CHEM': 'Science (AQA Trilogy)::2 Chemistry',
+    'PHYS': 'Science (AQA Trilogy)::3 Physics (units and ideas - equations are given)',
+    'RP': 'Science (AQA Trilogy)::4 Required practicals',
+    'MATHS_TOPICS': 'Maths (Edexcel 1MA1)::1 Topics',
+    'MATHS_LEARN': 'Maths (Edexcel 1MA1)::2 Formulae NOT on the sheet and facts',
+    'RJ': 'English Literature (AQA 8702)::1 Romeo and Juliet',
+    'JH': 'English Literature (AQA 8702)::2 Jekyll and Hyde',
+    'AIC': 'English Literature (AQA 8702)::3 An Inspector Calls',
+    'PC': 'English Literature (AQA 8702)::4 Power and Conflict and unseen',
+    'LANG': 'English Language (AQA 8700)',
 }
+LEGACY_ROOT = 'GCSE 2027'   # the old single parent deck; emptied and removed by build()
+# Days over which each subject's new cards are introduced: German vocab runs to about the end of February,
+# everything else finishes by early January (Phase 1 plus the Christmas catch-up).
+INTRO_DAYS = {'German (AQA 8662)': 140}
+DEFAULT_INTRO_DAYS = 85
+def root_of(deck_key):
+    return DECKS[deck_key].split('::')[0]
+
+# Facts the exam gives you (2027 AQA Physics equation sheet, Edexcel 1MA1 formula sheet) - never drilled.
+EXCLUDE = {
+    ('p-energy', 'Kinetic energy equation'), ('p-energy', 'GPE equation'), ('p-energy', 'Specific heat capacity equation'),
+    ('p-energy', 'Efficiency'), ('p-elec', 'V = ?'), ('p-particles', 'Density equation'),
+    ('p-particles', 'Specific latent heat equation'), ('p-forces', "Newton's second law"), ('p-forces', 'Weight equation'),
+    ('p-forces', "Hooke's law"), ('p-forces', 'Momentum equation (H)'), ('p-waves', 'Wave speed equation'),
+    ('p-waves', 'Frequency 50 Hz, wavelength 2 m \u2014 speed?'), ('p-magnet', 'Motor effect equation (H)'),
+    ('m-area', 'Area of a circle, radius 5 (in terms of \u03c0)'), ('m-area', 'Trapezium a = 6, b = 10, h = 4'),
+    ('m-area', 'Cylinder volume, r = 3, h = 10 (in terms of \u03c0)'), ('m-trig', 'Hypotenuse when the other sides are 5 and 12'),
+    ('m-trig', 'Area: a = 8, b = 5, C = 30\u00b0'), ('m-frac', '\u00a3200 at 3% compound interest for 4 years'),
+    ('m-quad', 'Solve 2x\u00b2 + 3x \u2212 4 = 0 to 2 d.p.'),
+}
+
 SUBJECT = {  # deck key -> (label, css code)
     'DE': ('German', 'de'), 'H': ('History', 'hist'), 'BIO': ('Biology', 'sci'), 'CHEM': ('Chemistry', 'sci'),
     'PHYS': ('Physics', 'sci'), 'RP': ('Required practical', 'sci'), 'MATHS': ('Maths', 'maths'),
@@ -192,6 +215,7 @@ def collect(app):
         if t['id'] not in TOPIC_MAP: continue
         deck, week = topic_deck(t['subject'], t['id']), TOPIC_MAP[t['id']]
         for q, a in t['cards']:
+            if (t['id'], q) in EXCLUDE: continue
             add_basic(deck, week, q, a, [t['id'], 'wk%02d' % week], info=t['name'])
     for i, (event, date) in enumerate(app['histDates']):
         deck, week = hist_date_place(i)
@@ -210,84 +234,109 @@ def collect(app):
                               tags=['vocab', 'list_' + lst, 'wk%02d' % week]))
     return items
 
-def ensure_preset(col, deck_ids):
-    conf = None
-    for c in col.decks.all_config():
-        if c['name'] == ROOT: conf = c
-    if conf is None:
-        conf = col.decks.add_config_returning_id(ROOT)
-        conf = col.decks.get_config(conf)
-    conf['new']['perDay'] = 35
-    conf['new']['bury'] = True
-    conf['rev']['perDay'] = 400
-    conf['rev']['bury'] = True
-    conf['newGatherPriority'] = 1   # lowest position first = timetable order
-    conf['newSortOrder'] = 1        # keep gathered order
-    conf['newMix'] = 0              # mix new cards with reviews
-    conf['desiredRetention'] = 0.9
-    col.decks.update_config(conf)
-    for did in deck_ids:
-        d = col.decks.get(did)
-        col.decks.set_config_id_for_deck_dict(d, conf['id'])
-        col.decks.save(d)
-    try:
-        col.set_config('fsrs', True)
-    except Exception:
-        pass
-
-def build(col):
-    with open(os.path.join(HERE, 'app_data.json'), encoding='utf-8') as f:
-        app = json.load(f)
-    items = collect(app)
-    basic, vocab = basic_model(col), vocab_model(col)
-    deck_ids = {ROOT: col.decks.id(ROOT)}
-    for k, name in DECKS.items():
-        deck_ids[k] = col.decks.id(ROOT + '::' + name)
-        parent = (ROOT + '::' + name).rsplit('::', 1)[0]
-        deck_ids[parent] = col.decks.id(parent)
-    existing = dict(col.db.all('select guid, id from notes'))
-    added = updated = 0
-    note_items = []
+def plan_order(items):
+    """Global order for new cards: by plan week, subjects interleaved round-robin. Returns [(guid, template ord)]."""
+    slots = defaultdict(lambda: defaultdict(list))
     for it in items:
-        model = basic if it['kind'] == 'basic' else vocab
-        nid = existing.get(it['guid'])
-        if nid:
-            note = col.get_note(nid)
-            if list(note.fields) != it['fields']:
-                note.fields = it['fields']; col.update_note(note); updated += 1
-        else:
-            note = col.new_note(model)
-            note.guid = it['guid']
-            note.fields = it['fields']
-            note.tags = ['GCSE2027'] + it['tags']
-            col.add_note(note, deck_ids[it['deck']])
-            added += 1
-        note_items.append((note.id, it))
-    # Position new cards in timetable order: by week, subjects interleaved round-robin
-    slots = defaultdict(lambda: defaultdict(list))  # week -> deck group -> [card ids]
-    for nid, it in note_items:
         group = it['deck'].split('_')[0]
-        for card in col.get_note(nid).cards():
-            if card.type != 0: continue  # only reposition cards that are still new
-            week = it['week'] if card.ord == 0 else (it['rev_week'] or it['week'])
-            slots[week][group].append(card.id)
+        slots[it['week']][group].append((it['guid'], 0))
+        if it['kind'] == 'vocab' and it['fields'][3]:
+            slots[it['rev_week'] or it['week']][group].append((it['guid'], 1))
     order = []
     for week in sorted(slots):
         queues = [list(q) for q in slots[week].values()]
         while any(queues):
             for q in queues:
                 if q: order.append(q.pop(0))
-    for pos, cid in enumerate(order, start=1):
-        col.db.execute('update cards set due = ?, mod = ?, usn = -1 where id = ? and type = 0', pos, int(__import__('time').time()), cid)
-    ensure_preset(col, list(deck_ids.values()))
-    total = col.db.scalar('select count() from cards c join notes n on c.nid = n.id where n.tags like ?', '% GCSE2027 %')
-    print(f'notes added {added}, updated {updated}; GCSE 2027 cards in collection: {total}')
-    per_deck = OrderedDict()
-    for k, name in DECKS.items():
-        per_deck[name] = col.decks.card_count(deck_ids[k], include_subdecks=True)
-    for name, n in per_deck.items():
-        print(f'  {n:5d}  {name}')
-    return deck_ids[ROOT]
+    return order
+
+def ensure_presets(col, items, deck_ids):
+    """One preset per subject: daily new cards = cards / intro days, gathered in plan order."""
+    cards_per_root = defaultdict(int)
+    for it in items:
+        cards_per_root[root_of(it['deck'])] += 2 if (it['kind'] == 'vocab' and it['fields'][3]) else 1
+    existing = {c['name']: c for c in col.decks.all_config()}
+    limits = {}
+    for root, n in cards_per_root.items():
+        name = 'GCSE ' + root.split(' (')[0]
+        conf = existing.get(name) or col.decks.get_config(col.decks.add_config_returning_id(name))
+        per_day = max(2, math.ceil(n / INTRO_DAYS.get(root, DEFAULT_INTRO_DAYS)))
+        conf['new']['perDay'] = per_day
+        conf['new']['bury'] = True
+        conf['rev']['perDay'] = 400
+        conf['rev']['bury'] = True
+        conf['newGatherPriority'] = 1   # lowest position first = timetable order
+        conf['newSortOrder'] = 1        # keep gathered order
+        conf['newMix'] = 0              # mix new cards with reviews
+        conf['desiredRetention'] = 0.9
+        col.decks.update_config(conf)
+        limits[root] = per_day
+        for deck_name, did in deck_ids.items():
+            if deck_name == root or deck_name.startswith(root + '::'):
+                d = col.decks.get(did)
+                col.decks.set_config_id_for_deck_dict(d, conf['id'])
+                col.decks.save(d)
+    try:
+        col.set_config('fsrs', True)
+    except Exception:
+        pass
+    return limits
+
+def build(col, log=print):
+    """Adds/updates every card, moves cards into the per-subject decks, removes cards that are no longer
+    in the plan (e.g. equation-sheet facts), and re-orders new cards to follow the timetable.
+    Safe to run on a live collection (it is also run from inside Anki's debug console)."""
+    with open(os.path.join(HERE, 'app_data.json'), encoding='utf-8') as f:
+        app = json.load(f)
+    items = collect(app)
+    basic, vocab = basic_model(col), vocab_model(col)
+    deck_ids = {}
+    for name in DECKS.values():
+        parts = name.split('::')
+        for i in range(1, len(parts) + 1):
+            deck_ids['::'.join(parts[:i])] = col.decks.id('::'.join(parts[:i]))
+    existing = dict(col.db.all('select guid, id from notes'))
+    added = updated = moved = 0
+    card_for = {}
+    for it in items:
+        did = deck_ids[DECKS[it['deck']]]
+        nid = existing.get(it['guid'])
+        if nid:
+            note = col.get_note(nid)
+            if list(note.fields) != it['fields']:
+                note.fields = it['fields']; col.update_note(note); updated += 1
+            wrong = [c.id for c in note.cards() if c.did != did and c.odid != did]
+            if wrong:
+                col.set_deck(wrong, did); moved += len(wrong)
+        else:
+            note = col.new_note(basic if it['kind'] == 'basic' else vocab)
+            note.guid = it['guid']
+            note.fields = it['fields']
+            note.tags = ['GCSE2027'] + it['tags']
+            col.add_note(note, did)
+            added += 1
+        for c in col.get_note(note.id).cards():
+            card_for[(it['guid'], c.ord)] = c
+    # Remove GCSE notes that are no longer in the plan (equation-sheet facts, reworded cards)
+    keep = {it['guid'] for it in items}
+    stale = [nid for g, nid in col.db.all("select guid, id from notes where tags like '% GCSE2027 %'") if g not in keep]
+    if stale:
+        col.remove_notes(stale)
+    # Re-order the cards that are still new so they follow the plan week by week
+    order = [card_for[k].id for k in plan_order(items) if k in card_for and card_for[k].type == 0]
+    if order:
+        col.sched.reposition_new_cards(card_ids=order, starting_from=1, step_size=1, randomize=False, shift_existing=False)
+    limits = ensure_presets(col, items, deck_ids)
+    # Remove the old single parent deck once nothing is left in it
+    old = col.decks.id_for_name(LEGACY_ROOT)
+    if old and col.decks.card_count(old, include_subdecks=True) == 0:
+        col.decks.remove([old])
+    total = col.db.scalar("select count() from cards c join notes n on c.nid = n.id where n.tags like '% GCSE2027 %'")
+    log(f'notes added {added}, updated {updated}, removed {len(stale)}; cards moved {moved}; GCSE cards now {total}')
+    roots = sorted({root_of(k) for k in DECKS})
+    for root in roots:
+        log(f'  {col.decks.card_count(deck_ids[root], include_subdecks=True):5d} cards, {limits.get(root)} new/day  {root}')
+    return [deck_ids[r] for r in roots]
 
 def main():
     ap = argparse.ArgumentParser()
@@ -305,10 +354,10 @@ def main():
         tmp = os.path.join(tempfile.mkdtemp(), 'build.anki2')
         col = Collection(tmp)
         try:
-            root = build(col)
+            build(col)
             col.export_anki_package(out_path=os.path.abspath(a.apkg),
                                     options=ExportAnkiPackageOptions(with_scheduling=True, with_deck_configs=True, with_media=False, legacy=False),
-                                    limit=DeckIdLimit(root))
+                                    limit=None)
             print('wrote', a.apkg)
         finally:
             col.close()

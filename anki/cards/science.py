@@ -303,21 +303,15 @@ CARDS += sec('CHEM', 9, 'C10', [
 
 CARDS += sec('PHYS', 1, 'P1', [
     ('Eight energy stores', 'Kinetic, gravitational potential, elastic potential, thermal, chemical, magnetic, electrostatic, nuclear'),
-    ('Kinetic energy equation (with units)', 'Ek = ½ m v² — J, kg, m/s'),
-    ('Gravitational potential energy equation', 'Ep = m g h — J, kg, N/kg, m'),
-    ('Elastic potential energy equation', 'Ee = ½ k e² — J, N/m, m'),
     ('Definition of specific heat capacity', 'Energy needed to raise the temperature of 1 kg of a substance by 1 °C'),
     ('Definition of power', 'The rate of energy transfer (or work done). 1 watt = 1 joule per second.'),
-    ('Efficiency equation', 'useful output energy (or power) ÷ total input energy (or power)'),
     ('Two ways to reduce unwanted energy transfers', 'Lubrication (less friction) and thermal insulation (thicker walls, low thermal conductivity)'),
     ('Renewable energy resources', 'Bio-fuel, wind, hydro-electricity, geothermal, tides, sun, water waves'),
     ('Non-renewable energy resources', 'Coal, oil, gas, nuclear fuel'),
-    ('Work done equation', 'W = F s — J, N, m (distance moved along the line of the force)'),
 ])
 
 CARDS += sec('PHYS', 2, 'P2', [
-    ('Definition of current', 'Rate of flow of electrical charge: Q = I t (C, A, s)'),
-    ('Potential difference, current and resistance', 'V = I R (V, A, Ω)'),
+    ('Definition of current', 'The rate of flow of electrical charge (measured in amperes, A)'),
     ('Series circuit rules', 'Same current everywhere; potential difference is shared; total resistance = R₁ + R₂'),
     ('Parallel circuit rules', 'Same pd across each branch; currents add up; total resistance is less than the smallest resistor'),
     ('Ohmic conductor', 'Current is directly proportional to pd at constant temperature'),
@@ -325,8 +319,6 @@ CARDS += sec('PHYS', 2, 'P2', [
     ('Diode', 'Current flows in one direction only (very high resistance in reverse)'),
     ('LDR', 'Resistance decreases as light intensity increases'),
     ('Thermistor', 'Resistance decreases as temperature increases'),
-    ('Power equations in circuits', 'P = V I and P = I² R'),
-    ('Energy transferred by an appliance', 'E = P t and E = Q V'),
     ('UK mains supply', 'Alternating current, 230 V, 50 Hz'),
     ('Wire colours in a UK plug', 'Live: brown. Neutral: blue. Earth: green and yellow.'),
     ('Why is the live wire dangerous even when switched off?', 'It is still at 230 V; touching it makes a path to earth, so current flows through you'),
@@ -334,11 +326,9 @@ CARDS += sec('PHYS', 2, 'P2', [
 ])
 
 CARDS += sec('PHYS', 4, 'P3', [
-    ('Density equation', 'ρ = m / V (kg/m³, kg, m³)'),
     ('Is a change of state physical or chemical?', 'Physical — reversible, and mass is conserved'),
     ('What is internal energy?', 'The total kinetic and potential energy of all the particles in a system'),
     ('Definition of specific latent heat', 'Energy needed to change the state of 1 kg of a substance with no change in temperature'),
-    ('Latent heat equation', 'E = m L (J, kg, J/kg)'),
     ('Latent heat of fusion vs vaporisation', 'Fusion: solid ↔ liquid. Vaporisation: liquid ↔ gas.'),
     ('What do the flat parts of a heating curve show?', 'A change of state — energy breaks bonds instead of raising temperature'),
     ('Why does gas pressure rise with temperature (fixed volume)?', 'Particles move faster, so they hit the walls more often and with more force'),
@@ -358,15 +348,12 @@ CARDS += sec('PHYS', 5, 'P4', [
 
 CARDS += sec('PHYS', 6, 'P5', [
     ('Scalar vs vector', 'Scalar: magnitude only (speed, distance, mass). Vector: magnitude and direction (velocity, displacement, force).'),
-    ('Weight equation', 'W = m g; g = 9.8 N/kg on Earth'),
-    ('Hooke’s law', 'F = k e, up to the limit of proportionality'),
+    ('Hooke’s law', 'The extension of a spring is directly proportional to the force applied, up to the limit of proportionality'),
     ('Gradient of a distance–time graph', 'Speed'),
     ('Velocity–time graph: gradient and area', 'Gradient = acceleration. Area under the line = distance travelled.'),
-    ('Acceleration equation', 'a = Δv / t (m/s²)'),
-    ('Equation linking v, u, a and s', 'v² − u² = 2 a s'),
     ('Typical speeds', 'Walking ~1.5 m/s, running ~3 m/s, cycling ~6 m/s, sound in air ~330 m/s'),
     ('Newton’s first law', 'If the resultant force is zero, a stationary object stays still and a moving one keeps the same velocity'),
-    ('Newton’s second law', 'F = m a — acceleration is proportional to the resultant force and inversely proportional to mass'),
+    ('Newton’s second law (in words)', 'Acceleration is directly proportional to the resultant force and inversely proportional to the mass'),
     ('Newton’s third law', 'When two objects interact, they exert equal and opposite forces on each other'),
     ('What is terminal velocity?', 'Top speed reached when drag equals weight, so the resultant force is zero'),
 ])
@@ -376,15 +363,12 @@ CARDS += sec('PHYS', 7, 'P5', [
     ('Factors affecting thinking distance', 'Speed and reaction time (tiredness, drugs, alcohol, distractions)'),
     ('Factors affecting braking distance', 'Speed, wet or icy roads, worn brakes or tyres'),
     ('Typical reaction time', '0.2–0.9 s'),
-    ('Momentum equation (HT)', 'p = m v (kg m/s)'),
     ('Conservation of momentum (HT)', 'In a closed system, total momentum before = total momentum after'),
     ('Why are large decelerations dangerous?', 'Large forces act on the people inside; brakes may overheat or the vehicle may skid'),
 ])
 
 CARDS += sec('PHYS', 8, 'P6', [
     ('Transverse vs longitudinal waves', 'Transverse: oscillations perpendicular to energy transfer (light, water ripples). Longitudinal: parallel, with compressions and rarefactions (sound).'),
-    ('Wave speed equation', 'v = f λ (m/s, Hz, m)'),
-    ('Period and frequency', 'T = 1 / f'),
     ('EM spectrum in order of increasing frequency', 'Radio, microwave, infrared, visible, ultraviolet, X-ray, gamma'),
     ('Speed of all EM waves in a vacuum', '3 × 10⁸ m/s'),
     ('Uses of radio waves and microwaves', 'Radio: TV and radio. Microwaves: satellite communications, cooking.'),
@@ -401,7 +385,6 @@ CARDS += sec('PHYS', 9, 'P7', [
     ('Why does a compass point north?', 'The Earth’s core produces a magnetic field'),
     ('Field around a current-carrying wire', 'Circular. Stronger with more current; weaker further from the wire.'),
     ('How to make a solenoid stronger', 'Add an iron core (electromagnet), more turns, more current'),
-    ('Force on a wire in a field (HT)', 'F = B I l (N, T, A, m)'),
     ('Fleming’s left-hand rule (HT)', 'Thumb = motion (force), first finger = field, second finger = current'),
 ])
 
@@ -416,10 +399,10 @@ CARDS += sec('RP', 5, 'RP', [
     ('RP Making salts: method', 'Add excess insoluble copper oxide to warm sulfuric acid, filter off the excess, evaporate then crystallise'),
     ('RP Electrolysis: method', 'Inert carbon electrodes in an aqueous solution; identify the products at each electrode with gas tests'),
     ('RP Temperature changes: method', 'React solutions in a polystyrene cup with a lid; record the highest temperature reached'),
-    ('RP Specific heat capacity: method', 'Heat a metal block with a heater and joulemeter; record temperature rise; c = E / (m Δθ); insulate the block'),
-    ('RP Resistance of a wire: method', 'Measure V and I for different lengths of wire; R = V / I; plot R against length'),
+    ('RP Specific heat capacity: method', 'Heat an insulated metal block with a heater and joulemeter; record the temperature rise; use the specific heat capacity equation from the sheet'),
+    ('RP Resistance of a wire: method', 'Measure pd and current for different lengths of wire; work out resistance; plot resistance against length'),
     ('RP I–V characteristics: method', 'Vary the pd across a resistor, lamp and diode with a variable resistor; record current; reverse for negative values'),
-    ('RP Density of an irregular object', 'Mass on a balance; volume by displacement in a eureka can; ρ = m / V'),
+    ('RP Density of an irregular object', 'Mass on a balance; volume by displacement in a eureka can; then use the density equation'),
 ])
 
 CARDS += sec('RP', 10, 'RP', [
@@ -431,8 +414,38 @@ CARDS += sec('RP', 10, 'RP', [
     ('RP Water purification: method', 'Test pH, evaporate to find the mass of dissolved solids, distil the water'),
     ('RP Force and extension: method', 'Add masses to a spring and measure the extension each time with a ruler at eye level'),
     ('RP Acceleration: method', 'Trolley pulled by hanging masses; measure acceleration with light gates; vary force (keeping total mass constant) or mass'),
-    ('RP Waves: ripple tank', 'Measure wavelength (ruler over several waves) and frequency (count waves in 10 s); v = f λ'),
+    ('RP Waves: ripple tank', 'Measure wavelength (ruler over several waves) and frequency (count waves in 10 s), then use the wave speed equation'),
     ('RP Waves: string', 'Vibration generator; adjust frequency to get a stationary wave; measure half-wavelengths with a metre rule'),
     ('RP Infrared radiation: method', 'Leslie cube filled with hot water; measure IR from each surface with a detector at the same distance'),
     ('Which surface emits the most IR?', 'Matt black (shiny silver emits the least)'),
+])
+
+CARDS += sec('PHYS', 3, 'units', [
+    ('Unit of current', 'ampere (A)'),
+    ('Unit of work done', 'joule (J)'),
+    ('Unit of weight', 'newton (N)'),
+    ('Unit of gravitational field strength', 'N/kg (g = 9.8 N/kg on Earth — given in the question)'),
+    ('Unit of wavelength', 'metre (m)'),
+    ('Unit of period', 'second (s)'),
+    ('Unit of gas pressure', 'pascal (Pa)'),
+    ('Unit of activity (radioactivity)', 'becquerel (Bq)'),
+    ('Prefixes: G, M, k', 'G = ×10⁹, M = ×10⁶, k = ×10³'),
+    ('Prefixes: m, µ, n', 'm = ×10⁻³, µ = ×10⁻⁶, n = ×10⁻⁹'),
+    ('The equation sheet gives you…', 'Every physics equation — but NOT units, symbols’ meanings in context, or how to rearrange. Practise choosing and rearranging.'),
+])
+
+CARDS += sec('CHEM', 2, 'formulae', [
+    ('Charge on ions from groups 1, 2, 3, 6, 7', 'Group 1: +1, group 2: +2, group 3: +3, group 6: −2, group 7: −1'),
+    ('Formula of the hydroxide ion', 'OH⁻'),
+    ('Formula of the sulfate ion', 'SO₄²⁻'),
+    ('Formula of the nitrate ion', 'NO₃⁻'),
+    ('Formula of the carbonate ion', 'CO₃²⁻'),
+    ('Formula of the ammonium ion', 'NH₄⁺'),
+    ('Formulae of hydrochloric, sulfuric and nitric acid', 'HCl, H₂SO₄, HNO₃'),
+    ('Formulae of sodium hydroxide and calcium hydroxide', 'NaOH, Ca(OH)₂'),
+    ('Formulae of water, carbon dioxide, methane, ammonia', 'H₂O, CO₂, CH₄, NH₃'),
+    ('Which elements are diatomic?', 'H₂, N₂, O₂, F₂, Cl₂, Br₂, I₂'),
+    ('Formula of sodium chloride, magnesium oxide, calcium carbonate', 'NaCl, MgO, CaCO₃'),
+    ('Formula of copper sulfate and sodium carbonate', 'CuSO₄, Na₂CO₃'),
+    ('What the periodic table gives you in the exam', 'Symbols, atomic numbers and relative atomic masses — not ion charges, formulae or electron arrangements'),
 ])

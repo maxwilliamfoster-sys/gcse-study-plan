@@ -94,12 +94,10 @@ CARDS += sec('MATHS_LEARN', 7, 'trig', [
 ])
 
 CARDS += sec('MATHS_LEARN', 8, 'mensuration', [
-    ('Area of a triangle (not the trig one)', '½ × base × perpendicular height'),
+    ('Area of a triangle ½bh (not on the sheet)', '½ × base × perpendicular height'),
     ('Area of a parallelogram', 'base × perpendicular height'),
-    ('Area and circumference of a circle', 'A = πr², C = πd = 2πr'),
     ('Arc length (not given)', '(θ / 360) × πd'),
     ('Sector area (not given)', '(θ / 360) × πr²'),
-    ('Volume of a cylinder', 'πr²h'),
     ('Volume of a frustum', 'Volume of the whole cone − volume of the small cone removed'),
     ('Vector proof: showing points are on a straight line', 'Show one vector is a multiple of the other AND they share a point'),
     ('Vectors: parallel means…', 'One vector is a scalar multiple of the other'),
@@ -107,7 +105,6 @@ CARDS += sec('MATHS_LEARN', 8, 'mensuration', [
 
 CARDS += sec('MATHS_LEARN', 9, 'stats', [
     ('Independent events: P(A and B)', 'P(A) × P(B)'),
-    ('Mutually exclusive events: P(A or B)', 'P(A) + P(B)'),
     ('Venn notation A ∩ B, A ∪ B, A′, ξ', 'Intersection (both), union (either), complement (not A), universal set'),
     ('Frequency density', 'frequency ÷ class width'),
     ('Interquartile range', 'Upper quartile − lower quartile'),
