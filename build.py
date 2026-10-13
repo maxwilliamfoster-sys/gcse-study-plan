@@ -10,18 +10,29 @@ data = json.dumps(slim, ensure_ascii=False).replace('</', r'<\/')
 frag = src.replace('/*VIDEOS*/{}', data, 1)
 (root / 'dist').mkdir(exist_ok=True)
 (root / 'dist' / 'plan.html').write_text(frag, encoding='utf-8')
-head = '\n'.join([
-    '<!doctype html>',
-    '<html lang="en-GB">',
-    '<head>',
-    '<meta charset="utf-8">',
-    '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
-    '<link rel="icon" href="icon-192.png" type="image/png">',
-    '<link rel="apple-touch-icon" href="icon-180.png">',
-    '<link rel="manifest" href="manifest.webmanifest">',
-    '<meta name="theme-color" content="#2f5bd3">',
-    '',
-])
-page = head + frag.replace('<div class="wrap">', '</head>\n<body>\n<div class="wrap">', 1) + '\n</body>\n</html>\n'
+# Oct 2026: the study plan was merged into the GCSE Plan app, so the Pages site now forwards there
+# (old tab links map to the matching screen). dist/plan.html is still built as a record of the old page.
+NEW = 'https://maxwilliamfoster-sys.github.io/gcse-plan/'
+page = f'''<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>GCSE Study Plan has moved</title>
+<meta http-equiv="refresh" content="0; url={NEW}#/today">
+<script>
+var tabs = {{today: '/today', week: '/week', plan: '/plan', subjects: '/subjects', exams: '/plan/exams', method: '/plan/method'}};
+location.replace('{NEW}#' + (tabs[location.hash.slice(1)] || '/today'));
+</script>
+</head>
+<body style="font:16px/1.5 system-ui,sans-serif;max-width:32rem;margin:15vh auto;padding:0 16px">
+<h1 style="font-size:1.4rem">Your study plan has moved</h1>
+<p>The timetable, live lessons and weekly videos are now part of your GCSE Plan app.</p>
+<p><a href="{NEW}#/today">Open GCSE Plan</a></p>
+</body>
+</html>
+'''
 (root / 'index.html').write_text(page, encoding='utf-8')
 print('built', len(frag) // 1024, 'KB,', sum(len(v) for v in slim.values()), 'videos')

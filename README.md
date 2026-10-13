@@ -2,7 +2,9 @@
 
 A home-study GCSE timetable and revision guide, built around the Year 11 online-school lessons.
 
-**Live page:** https://maxwilliamfoster-sys.github.io/gcse-study-plan/
+> **October 2026: merged into the GCSE Plan app** (https://maxwilliamfoster-sys.github.io/gcse-plan/, repo `gcse-plan`). Its Today and Week tabs now run this timetable, with the live lessons, weekly focus, recipes and videos. This Pages site redirects there. This repo still holds the **video scraper** (`videos/`, which the app's build reads) and the **Anki deck builder** (`anki/`). `src/plan.html` is kept as the record of the old page.
+
+**Old live page (now a redirect):** https://maxwilliamfoster-sys.github.io/gcse-study-plan/
 
 | Subject | Board | Tier |
 |---|---|---|
